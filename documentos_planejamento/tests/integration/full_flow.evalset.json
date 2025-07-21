@@ -1,0 +1,129 @@
+[
+  {
+    "name": "complete_visual_flow",
+    "data": [
+      {
+        "query": "Não entendi esse exercício aqui de matemática",
+        "expected_tool_use": [
+          {
+            "tool_name": "transcrever_audio",
+            "tool_input": {
+              "audio_data": "AUDIO_SIMULADO_BASE64",
+              "formato": "mp3"
+            }
+          },
+          {
+            "tool_name": "analisar_necessidade_visual",
+            "tool_input": {
+              "texto": "Não entendi esse exercício aqui de matemática"
+            }
+          }
+        ],
+        "intermediate_response": "Vejo que você está com dúvida em um exercício de matemática. Vou precisar ver o exercício para te ajudar melhor. Por favor, tire uma foto!",
+        "follow_up_input": {
+          "imagem_data": "IMAGEM_SIMULADA_BASE64",
+          "contexto_pergunta": "Não entendi esse exercício aqui de matemática"
+        },
+        "expected_tool_use_follow_up": [
+          {
+            "tool_name": "analisar_imagem_educacional",
+            "tool_input": {
+              "imagem_data": "IMAGEM_SIMULADA_BASE64",
+              "contexto_pergunta": "Não entendi esse exercício aqui de matemática"
+            }
+          }
+        ],
+        "reference": "Ótima pergunta! Vi o exercício de matemática sobre equações quadráticas que você me mostrou. Vou explicar passo a passo como resolver!"
+      }
+    ],
+    "initial_session": {
+      "state": {
+        "user:name": "Maria",
+        "user:serie_escolar": "5º ano",
+        "primeira_interacao": false
+      },
+      "app_name": "ProfessorVirtualApp",
+      "user_id": "test_user_001"
+    }
+  },
+  {
+    "name": "error_handling_flow",
+    "data": [
+      {
+        "query": "",
+        "audio_error": "Arquivo de áudio corrompido",
+        "expected_tool_use": [
+          {
+            "tool_name": "transcrever_audio",
+            "tool_input": {
+              "audio_data": "CORRUPTED_AUDIO",
+              "formato": "mp3"
+            }
+          }
+        ],
+        "reference": "Oi! 😊 Parece que tive um probleminha para entender o áudio. Você pode repetir sua pergunta? Às vezes o barulho ao redor pode atrapalhar um pouquinho."
+      },
+      {
+        "query": "Me ajuda com isso",
+        "follow_up_input": {
+          "imagem_data": "IMAGEM_MUITO_PEQUENA",
+          "contexto_pergunta": "Me ajuda com isso"
+        },
+        "expected_tool_use": [
+          {
+            "tool_name": "analisar_imagem_educacional",
+            "tool_input": {
+              "imagem_data": "IMAGEM_MUITO_PEQUENA",
+              "contexto_pergunta": "Me ajuda com isso"
+            }
+          }
+        ],
+        "reference": "A foto ficou um pouco difícil de ver. Que tal tirar outra foto com mais luz ou mais de pertinho? Não se preocupe, estou aqui para ajudar! 💪"
+      }
+    ],
+    "initial_session": {
+      "state": {
+        "primeira_interacao": true
+      },
+      "app_name": "ProfessorVirtualApp",
+      "user_id": "test_user_002"
+    }
+  },
+  {
+    "name": "tts_generation_flow",
+    "data": [
+      {
+        "query": "O que é um triângulo?",
+        "expected_tool_use": [
+          {
+            "tool_name": "transcrever_audio",
+            "tool_input": {
+              "audio_data": "AUDIO_SIMULADO_BASE64",
+              "formato": "mp3"
+            }
+          }
+        ],
+        "reference": "Um triângulo é uma figura geométrica que tem 3 lados e 3 ângulos. É como se você conectasse 3 pontos com linhas retas!",
+        "follow_up_action": "request_tts",
+        "expected_tool_use_tts": [
+          {
+            "tool_name": "gerar_audio_tts",
+            "tool_input": {
+              "texto": "Um triângulo é uma figura geométrica que tem 3 lados e 3 ângulos. É como se você conectasse 3 pontos com linhas retas!",
+              "velocidade": 1.0,
+              "voz": "pt-BR-Standard-A"
+            }
+          }
+        ]
+      }
+    ],
+    "initial_session": {
+      "state": {
+        "user:name": "João",
+        "user:serie_escolar": "3º ano"
+      },
+      "app_name": "ProfessorVirtualApp",
+      "user_id": "test_user_003"
+    }
+  }
+]

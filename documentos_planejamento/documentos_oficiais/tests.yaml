@@ -1,0 +1,210 @@
+# Testes Declarativos para o Professor Virtual ADK
+# Validam os requisitos funcionais e de experiência do usuário
+
+test_suite:
+  name: "Professor Virtual - Testes de Validação"
+  description: "Valida fluxos críticos do sistema educacional"
+  
+tests:
+  # Teste 1: Pergunta simples sem necessidade visual
+  - name: "pergunta_simples_sem_visual"
+    description: "Valida processamento de pergunta que não requer imagem"
+    input:
+      audio_base64: "AUDIO_SIMULADO_BASE64"
+      formato: "mp3"
+      transcricao_simulada: "O que é fotossíntese?"
+    session_state:
+      primeira_interacao: false
+      user_name: "Maria"
+      serie_escolar: "5º ano"
+    expected_tools_called:
+      - name: "transcrever_audio"
+        called: true
+      - name: "analisar_necessidade_visual"
+        called: true
+        expected_output:
+          necessita_imagem: false
+          confianca: 0.0
+      - name: "analisar_imagem_educacional"
+        called: false
+    expected_response:
+      contains_all:
+        - "fotossíntese"
+        - "plantas"
+        - "luz do sol"
+      tone: "educacional_amigavel"
+      has_encouragement: true
+      
+  # Teste 2: Pergunta com referência visual clara
+  - name: "pergunta_com_referencia_visual"
+    description: "Valida detecção de necessidade visual e fluxo de captura"
+    input:
+      audio_base64: "AUDIO_SIMULADO_BASE64"
+      formato: "wav"
+      transcricao_simulada: "Não entendi esse exercício aqui de matemática"
+    session_state:
+      primeira_interacao: false
+      ultima_materia: "matematica"
+    expected_tools_called:
+      - name: "transcrever_audio"
+        called: true
+      - name: "analisar_necessidade_visual"
+        called: true
+        expected_output:
+          necessita_imagem: true
+          confianca: 0.85
+          referencias_encontradas: ["esse", "exercício", "aqui"]
+    expected_actions:
+      - type: "request_image_capture"
+        interface: "camera_direct_open"
+    expected_flow: "aguardar_captura_imagem"
+    
+  # Teste 3: Processamento com imagem capturada
+  - name: "processamento_com_imagem"
+    description: "Valida análise de imagem e resposta contextualizada"
+    input:
+      texto_pergunta: "Não entendi esse exercício aqui de matemática"
+      imagem_base64: "IMAGEM_SIMULADA_BASE64"
+    session_state:
+      aguardando_imagem: true
+      contexto_visual_disponivel: true
+    expected_tools_called:
+      - name: "analisar_imagem_educacional"
+        called: true
+        expected_output:
+          tipo_conteudo: "exercicio_matematica"
+          qualidade_adequada: true
+          elementos_detectados: ["equação", "números"]
+    expected_response:
+      uses_visual_context: true
+      contains_all:
+        - "exercício"
+        - "passo a passo"
+        - "vamos resolver"
+      has_structured_solution: true
+      
+  # Teste 4: Imagem com qualidade inadequada
+  - name: "imagem_qualidade_ruim"
+    description: "Valida tratamento de imagem inadequada"
+    input:
+      texto_pergunta: "Me ajuda com isso"
+      imagem_base64: "IMAGEM_PEQUENA_BASE64"
+    expected_tools_called:
+      - name: "analisar_imagem_educacional"
+        called: true
+        expected_output:
+          qualidade_adequada: false
+          sugestao_acao: "Imagem pode estar com baixa resolução"
+    expected_response:
+      contains: "tirar outra foto"
+      tone: "encorajador"
+      offers_alternative_help: true
+      
+  # Teste 5: Solicitação de áudio TTS
+  - name: "geracao_audio_sob_demanda"
+    description: "Valida geração de áudio apenas quando solicitado"
+    input:
+      action: "play_button_pressed"
+      texto_resposta: "A fotossíntese é o processo pelo qual as plantas produzem seu próprio alimento usando luz solar, água e gás carbônico."
+    expected_tools_called:
+      - name: "gerar_audio_tts"
+        called: true
+        expected_output:
+          sucesso: true
+          formato: "mp3"
+    expected_response:
+      audio_generated: true
+      audio_format: "mp3"
+      
+  # Teste 6: Timeout de captura de imagem
+  - name: "timeout_captura_imagem"
+    description: "Valida comportamento quando usuário cancela/timeout na câmera"
+    input:
+      action: "camera_closed"
+      original_question: "Esse problema aqui tá difícil"
+    session_state:
+      aguardando_imagem: true
+    expected_tools_called:
+      - name: "analisar_imagem_educacional"
+        called: false
+    expected_response:
+      provides_generic_help: true
+      acknowledges_visual_reference: true
+      contains: "me dar mais detalhes"
+      
+  # Teste 7: Áudio muito grande
+  - name: "audio_excede_limite"
+    description: "Valida rejeição de áudio que excede 10MB"
+    input:
+      audio_base64: "AUDIO_MUITO_GRANDE_SIMULADO"
+      formato: "wav"
+      tamanho_simulado_mb: 15
+    expected_tools_called:
+      - name: "transcrever_audio"
+        called: true
+        expected_output:
+          sucesso: false
+          erro: "Arquivo de áudio muito grande"
+    expected_response:
+      error_message: true
+      suggests_retry: true
+      
+  # Teste 8: Primeira interação
+  - name: "primeira_interacao_boas_vindas"
+    description: "Valida mensagem de boas-vindas apropriada"
+    input:
+      audio_base64: "AUDIO_SIMULADO_BASE64"
+      transcricao_simulada: "Oi"
+    session_state:
+      primeira_interacao: true
+    expected_response:
+      is_welcome_message: true
+      contains_all:
+        - "Professor Virtual"
+        - "ajudar"
+        - "escola"
+      lists_subjects: true
+      
+  # Teste 9: Múltiplas referências visuais
+  - name: "multiplas_referencias_visuais"
+    description: "Valida alta confiança com múltiplas referências"
+    input:
+      transcricao_simulada: "Olha esse exercício aqui, não entendi isso que tá mostrando no gráfico"
+    expected_tools_called:
+      - name: "analisar_necessidade_visual"
+        expected_output:
+          necessita_imagem: true
+          confianca: 0.95
+          referencias_encontradas: ["esse", "aqui", "isso", "mostrando"]
+          
+  # Teste 10: Matéria específica detectada
+  - name: "deteccao_materia_contexto"
+    description: "Valida adaptação da resposta baseada na matéria"
+    input:
+      transcricao_simulada: "Como eu resolvo essa equação do segundo grau?"
+    session_state:
+      serie_escolar: "9º ano"
+    expected_response:
+      detected_subject: "matematica"
+      includes_formula: true
+      has_step_by_step: true
+      appropriate_for_grade: "9º ano"
+
+# Configurações dos testes
+test_config:
+  timeout_seconds: 30
+  retry_on_failure: false
+  parallel_execution: false
+  
+# Métricas de sucesso
+success_metrics:
+  min_pass_rate: 0.95  # 95% dos testes devem passar
+  max_response_time_ms: 3000  # Respostas em até 3 segundos
+  visual_detection_accuracy: 0.90  # 90% de precisão na detecção visual
+  
+# Dados simulados para os testes
+mock_data:
+  AUDIO_SIMULADO_BASE64: "U2ltdWxhZG8gYXVkaW8gZGF0YQ=="
+  IMAGEM_SIMULADA_BASE64: "U2ltdWxhZG8gaW1hZ2VtIGRhdGE="
+  IMAGEM_PEQUENA_BASE64: "VGlueSBpbWFnZQ=="
+  AUDIO_MUITO_GRANDE_SIMULADO: "TXVpdG8gZ3JhbmRlIGF1ZGlvIGRhdGE="

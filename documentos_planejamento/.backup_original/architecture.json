@@ -1,0 +1,151 @@
+{
+  "nome": "ProfessorVirtual",
+  "tipo": "agent",
+  "classe_adk": "LlmAgent",
+  "descricao": "Agente educacional inteligente que processa perguntas de crianças através de áudio e, quando necessário, imagens, fornecendo respostas educativas estruturadas",
+  "justificativa_escolha": "LlmAgent foi escolhido porque é a classe base para agentes baseados em LLM no ADK, conforme documentado no anexo. É a opção mais simples e direta para processar requisições pontuais de texto (transcrições) e coordenar ferramentas. Não há necessidade de LoopAgent ou SequentialAgent pois a interação é única e direta por requisição.",
+  "configuracao": {
+    "name": "professor_virtual",
+    "model": "gemini-2.5-flash",
+    "instruction": "professor_instructions_template",
+    "tools": [
+      "transcricao_audio_tool",
+      "analise_necessidade_visual_tool",
+      "analise_imagem_tool",
+      "gerar_audio_resposta_tool"
+    ],
+    "generate_content_config": {
+      "temperature": 0.7,
+      "max_tokens": 1000
+    }
+  },
+  "patterns": {
+    "interaction_pattern": "single_turn",
+    "processing_mode": "complete_data",
+    "response_format": "structured_text"
+  },
+  "componentes": [
+    {
+      "nome": "transcricao_audio_tool",
+      "tipo": "tool",
+      "classe_adk": "FunctionTool",
+      "descricao": "Ferramenta que transcreve áudio completo para texto usando serviços de speech-to-text",
+      "justificativa_escolha": "FunctionTool é a classe apropriada para encapsular uma função Python customizada, conforme descrito no anexo. É mais simples que RestApiTool pois não precisamos integrar com APIs externas complexas - apenas chamar um serviço de transcrição.",
+      "configuracao": {
+        "func": "transcrever_audio",
+        "name": "transcrever_audio",
+        "description": "Transcreve arquivo de áudio completo para texto"
+      }
+    },
+    {
+      "nome": "analise_necessidade_visual_tool",
+      "tipo": "tool",
+      "classe_adk": "FunctionTool",
+      "descricao": "Analisa o texto transcrito para detectar referências que sugerem necessidade de contexto visual",
+      "justificativa_escolha": "FunctionTool permite implementar a lógica de detecção de referências visuais de forma customizada e eficiente. É mais adequado que usar apenas prompts do LLM pois precisamos de análise consistente e rápida.",
+      "configuracao": {
+        "func": "analisar_necessidade_visual",
+        "name": "analisar_necessidade_visual",
+        "description": "Detecta se há referências visuais no texto que requerem captura de imagem"
+      }
+    },
+    {
+      "nome": "analise_imagem_tool",
+      "tipo": "tool",
+      "classe_adk": "FunctionTool",
+      "descricao": "Analisa imagem capturada extraindo informações educacionais relevantes",
+      "justificativa_escolha": "FunctionTool é ideal para processar imagens de forma pontual. Permite integração com serviços de visão computacional mantendo a simplicidade da implementação.",
+      "configuracao": {
+        "func": "analisar_imagem_educacional",
+        "name": "analisar_imagem_educacional",
+        "description": "Extrai informações educacionais relevantes de uma imagem"
+      }
+    },
+    {
+      "nome": "gerar_audio_resposta_tool",
+      "tipo": "tool",
+      "classe_adk": "FunctionTool",
+      "descricao": "Gera áudio TTS sob demanda quando o usuário solicita através do botão play",
+      "justificativa_escolha": "FunctionTool permite implementar TTS sob demanda, alinhado com o requisito de gerar áudio apenas quando o botão play é pressionado. Evita processamento desnecessário.",
+      "configuracao": {
+        "func": "gerar_audio_tts",
+        "name": "gerar_audio_tts",
+        "description": "Gera áudio TTS para o texto da resposta quando solicitado"
+      }
+    },
+    {
+      "nome": "session_service",
+      "tipo": "service",
+      "classe_adk": "InMemorySessionService",
+      "descricao": "Serviço de gerenciamento de sessões em memória para desenvolvimento",
+      "justificativa_escolha": "InMemorySessionService é adequado para prototipagem e desenvolvimento conforme o anexo. É a opção mais simples que atende aos requisitos sem adicionar complexidade de banco de dados.",
+      "configuracao": {}
+    },
+    {
+      "nome": "runner",
+      "tipo": "workflow",
+      "classe_adk": "InMemoryRunner",
+      "descricao": "Runner em memória para executar o agente professor virtual",
+      "justificativa_escolha": "InMemoryRunner é consistente com a escolha do InMemorySessionService e adequado para desenvolvimento. Processa requisições de forma síncrona, alinhado com o padrão de interação pontual.",
+      "configuracao": {
+        "agent": "professor_virtual",
+        "app_name": "ProfessorVirtualApp"
+      }
+    }
+  ],
+  "fluxo_principal": {
+    "1_captura_audio": {
+      "trigger": "usuario_solta_botao_microfone",
+      "acao": "enviar_audio_completo_para_processamento"
+    },
+    "2_processamento_audio": {
+      "ferramenta": "transcricao_audio_tool",
+      "entrada": "arquivo_audio_completo",
+      "saida": "texto_transcrito"
+    },
+    "3_analise_visual": {
+      "ferramenta": "analise_necessidade_visual_tool",
+      "entrada": "texto_transcrito",
+      "saida": "necessita_imagem_boolean"
+    },
+    "4_captura_imagem_condicional": {
+      "condicao": "necessita_imagem == true",
+      "acao_verdadeira": "abrir_camera_e_aguardar_captura",
+      "acao_falsa": "prosseguir_para_resposta"
+    },
+    "5_processamento_imagem": {
+      "ferramenta": "analise_imagem_tool",
+      "entrada": "imagem_capturada + contexto_pergunta",
+      "saida": "analise_visual_estruturada"
+    },
+    "6_geracao_resposta": {
+      "agente": "professor_virtual",
+      "entrada": "texto_transcrito + analise_visual_opcional",
+      "saida": "resposta_educativa_estruturada"
+    },
+    "7_apresentacao": {
+      "texto": "exibir_resposta_na_tela",
+      "audio_notificacao": "tocar_audio_pre_gravado",
+      "tts_sob_demanda": "mostrar_botao_play"
+    }
+  },
+  "configuracoes_globais": {
+    "timeout_captura_imagem": 30,
+    "max_tamanho_audio": "10MB",
+    "max_tamanho_imagem": "5MB",
+    "formatos_audio_suportados": [
+      "wav",
+      "mp3",
+      "m4a"
+    ],
+    "formatos_imagem_suportados": [
+      "jpg",
+      "png"
+    ],
+    "audios_pre_gravados": {
+      "resposta_pronta": "Prontinho, aqui está sua resposta!",
+      "erro_imagem": "Ops, não consegui ver bem. Pode tirar outra foto?",
+      "processando": "Deixa eu pensar..."
+    }
+  }
+}

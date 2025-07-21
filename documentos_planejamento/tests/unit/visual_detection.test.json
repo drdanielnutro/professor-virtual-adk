@@ -1,0 +1,48 @@
+[
+  {
+    "query": "Não entendi esse exercício aqui de matemática",
+    "expected_tool_use": [
+      {
+        "tool_name": "transcrever_audio",
+        "tool_input": {
+          "audio_data": "AUDIO_SIMULADO_BASE64",
+          "formato": "wav"
+        }
+      },
+      {
+        "tool_name": "analisar_necessidade_visual",
+        "tool_input": {
+          "texto": "Não entendi esse exercício aqui de matemática"
+        }
+      }
+    ],
+    "expected_intermediate_agent_responses": [
+      "Vejo que você está com dúvida em um exercício específico. Vou precisar ver o exercício para poder te ajudar melhor. Por favor, tire uma foto do exercício."
+    ],
+    "reference": "Detectei que você está se referindo a um exercício específico. Para ajudar melhor, preciso ver o exercício. Pode tirar uma foto?"
+  },
+  {
+    "query": "Olha esse problema aqui, não sei fazer",
+    "expected_tool_use": [
+      {
+        "tool_name": "analisar_necessidade_visual",
+        "tool_input": {
+          "texto": "Olha esse problema aqui, não sei fazer"
+        }
+      }
+    ],
+    "reference": "Vi que você está falando sobre um problema específico. Vou precisar de uma foto para entender melhor e te ajudar!"
+  },
+  {
+    "query": "O que significa isso que tá mostrando no gráfico?",
+    "expected_tool_use": [
+      {
+        "tool_name": "analisar_necessidade_visual",
+        "tool_input": {
+          "texto": "O que significa isso que tá mostrando no gráfico?"
+        }
+      }
+    ],
+    "reference": "Para explicar o que o gráfico está mostrando, preciso vê-lo. Pode tirar uma foto do gráfico para mim?"
+  }
+]

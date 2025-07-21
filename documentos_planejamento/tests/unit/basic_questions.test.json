@@ -1,0 +1,41 @@
+[
+  {
+    "query": "O que é fotossíntese?",
+    "expected_tool_use": [
+      {
+        "tool_name": "transcrever_audio",
+        "tool_input": {
+          "audio_data": "AUDIO_SIMULADO_BASE64",
+          "formato": "mp3"
+        }
+      },
+      {
+        "tool_name": "analisar_necessidade_visual",
+        "tool_input": {
+          "texto": "O que é fotossíntese?"
+        }
+      }
+    ],
+    "expected_intermediate_agent_responses": [],
+    "reference": "A fotossíntese é o processo pelo qual as plantas produzem seu próprio alimento usando luz do sol, água e gás carbônico. É como se as plantas fizessem sua própria comida usando a energia do sol!"
+  },
+  {
+    "query": "Como resolver uma equação do primeiro grau?",
+    "expected_tool_use": [
+      {
+        "tool_name": "transcrever_audio",
+        "tool_input": {
+          "audio_data": "AUDIO_SIMULADO_BASE64",
+          "formato": "mp3"
+        }
+      },
+      {
+        "tool_name": "analisar_necessidade_visual",
+        "tool_input": {
+          "texto": "Como resolver uma equação do primeiro grau?"
+        }
+      }
+    ],
+    "reference": "Para resolver uma equação do primeiro grau, você precisa isolar a incógnita (geralmente x) de um lado da equação. Vamos passo a passo!"
+  }
+]
