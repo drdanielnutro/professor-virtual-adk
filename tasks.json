@@ -1,0 +1,212 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Implementar a ferramenta transcricao_audio_tool",
+      "description": "Criar a função transcrever_audio que processa artefatos de áudio e os converte em texto usando serviços de speech-to-text",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "high",
+      "details": "Implementar função que aceita nome_artefato_audio e tool_context como parâmetros. Deve validar formatos (wav, mp3, m4a) e tamanho máximo (10MB). Retorna dict com sucesso, texto transcrito, duração, formato, tamanho e idioma detectado.",
+      "testStrategy": "Verificar se a função consegue acessar artefatos de áudio da sessão, valida formatos corretamente, respeita limite de tamanho e retorna estrutura de dados esperada",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Criar a função transcrever_audio",
+          "description": "Implementar a lógica completa de transcrição incluindo acesso ao artefato, validações e processamento",
+          "dependencies": [],
+          "details": "Usar tool_context.session.get_artifact() para acessar o artefato. Implementar validações de formato e tamanho. Simular transcrição retornando texto de exemplo.",
+          "status": "pending",
+          "parentTaskId": 1
+        },
+        {
+          "id": 2,
+          "title": "Verificação de consistência",
+          "description": "Validar nomenclatura e compatibilidade com architecture.json",
+          "dependencies": [
+            1
+          ],
+          "details": "Verificar se todos os nomes de classes, módulos e ferramentas estão corretos conforme definido em architecture.json",
+          "status": "pending",
+          "parentTaskId": 1
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Implementar a ferramenta analise_necessidade_visual_tool",
+      "description": "Criar a função analisar_necessidade_visual que detecta referências visuais no texto transcrito",
+      "status": "pending",
+      "dependencies": [
+        1
+      ],
+      "priority": "high",
+      "details": "Implementar análise de padrões visuais usando regex. Calcular pontuação de confiança baseada em palavras-chave. Retornar necessita_imagem boolean, confiança float e referências encontradas.",
+      "testStrategy": "Testar com diferentes textos contendo referências visuais variadas. Verificar se detecta corretamente palavras como 'esse aqui', 'exercício', 'figura'. Validar cálculo de confiança.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Criar a função analisar_necessidade_visual",
+          "description": "Implementar detecção de padrões visuais e cálculo de confiança",
+          "dependencies": [],
+          "details": "Usar lista de padrões regex para identificar referências visuais. Implementar sistema de pontuação com peso 0.15 por match. Adicionar pontos extras para palavras-chave específicas.",
+          "status": "pending",
+          "parentTaskId": 2
+        },
+        {
+          "id": 2,
+          "title": "Verificação de consistência",
+          "description": "Validar nomenclatura e compatibilidade com architecture.json",
+          "dependencies": [
+            1
+          ],
+          "details": "Verificar se todos os nomes de classes, módulos e ferramentas estão corretos conforme definido em architecture.json",
+          "status": "pending",
+          "parentTaskId": 2
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Implementar a ferramenta analise_imagem_tool",
+      "description": "Criar a função analisar_imagem_educacional que processa artefatos de imagem e extrai informações educacionais",
+      "status": "pending",
+      "dependencies": [
+        2
+      ],
+      "priority": "high",
+      "details": "Implementar função que aceita nome_artefato_imagem, contexto_pergunta e tool_context. Validar tamanho máximo (5MB). Retornar tipo_conteudo, elementos_detectados, contexto_educacional e qualidade.",
+      "testStrategy": "Verificar acesso correto ao artefato de imagem, validação de tamanho, análise de qualidade baseada em tamanho do arquivo, retorno de estrutura completa com todos os campos",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Criar a função analisar_imagem_educacional",
+          "description": "Implementar processamento de imagem educacional com validações",
+          "dependencies": [],
+          "details": "Acessar artefato usando tool_context. Validar tamanho máximo 5MB. Simular análise retornando tipo exercício matemática. Verificar qualidade baseada em tamanho.",
+          "status": "pending",
+          "parentTaskId": 3
+        },
+        {
+          "id": 2,
+          "title": "Verificação de consistência",
+          "description": "Validar nomenclatura e compatibilidade com architecture.json",
+          "dependencies": [
+            1
+          ],
+          "details": "Verificar se todos os nomes de classes, módulos e ferramentas estão corretos conforme definido em architecture.json",
+          "status": "pending",
+          "parentTaskId": 3
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Implementar a ferramenta gerar_audio_resposta_tool",
+      "description": "Criar a função gerar_audio_tts que converte texto em áudio e salva como artefato",
+      "status": "pending",
+      "dependencies": [
+        3
+      ],
+      "priority": "medium",
+      "details": "Implementar função que aceita texto, tool_context, velocidade e voz. Criar artefato de áudio usando UUID único. Retornar nome do artefato gerado para o cliente.",
+      "testStrategy": "Verificar validação de texto vazio, criação correta do artefato com UUID único, uso correto de create_artifact(), retorno do nome do artefato",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Criar a função gerar_audio_tts",
+          "description": "Implementar conversão de texto para áudio e criação de artefato",
+          "dependencies": [],
+          "details": "Validar texto não vazio. Gerar nome único com UUID. Usar tool_context.session.create_artifact() com mime_type audio/mpeg. Retornar nome do artefato.",
+          "status": "pending",
+          "parentTaskId": 4
+        },
+        {
+          "id": 2,
+          "title": "Verificação de consistência",
+          "description": "Validar nomenclatura e compatibilidade com architecture.json",
+          "dependencies": [
+            1
+          ],
+          "details": "Verificar se todos os nomes de classes, módulos e ferramentas estão corretos conforme definido em architecture.json",
+          "status": "pending",
+          "parentTaskId": 4
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Configurar o componente session_service",
+      "description": "Configurar o serviço de gerenciamento de sessões em memória para armazenar artefatos",
+      "status": "pending",
+      "dependencies": [
+        4
+      ],
+      "priority": "medium",
+      "details": "Configurar InMemorySessionService no runner do ADK. Este serviço é essencial para armazenar artefatos de áudio e imagem durante a interação.",
+      "testStrategy": "Verificar se a configuração usa a classe InMemorySessionService corretamente, validar integração com o runner, testar armazenamento e recuperação de artefatos",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Configurar o serviço de sessão em memória",
+          "description": "Adicionar configuração do InMemorySessionService ao runner",
+          "dependencies": [],
+          "details": "Usar classe InMemorySessionService do ADK. Adequado para prototipagem sem complexidade de banco de dados externo.",
+          "status": "pending",
+          "parentTaskId": 5
+        },
+        {
+          "id": 2,
+          "title": "Verificação de consistência",
+          "description": "Validar nome da classe InMemorySessionService",
+          "dependencies": [
+            1
+          ],
+          "details": "Verificar grafia exata para que o ADK possa instanciar o serviço corretamente",
+          "status": "pending",
+          "parentTaskId": 5
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Configurar o componente runner",
+      "description": "Configurar o executor do agente professor_virtual para orquestrar o fluxo de trabalho",
+      "status": "pending",
+      "dependencies": [
+        5
+      ],
+      "priority": "medium",
+      "details": "Configurar InMemoryRunner com referência ao agente professor_virtual. Processar requisições de forma síncrona, adequado para desenvolvimento.",
+      "testStrategy": "Verificar configuração correta do InMemoryRunner, validar referência ao agente professor_virtual, testar execução síncrona de requisições",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Configurar o executor do agente",
+          "description": "Adicionar configuração do InMemoryRunner com o agente",
+          "dependencies": [],
+          "details": "Usar classe InMemoryRunner consistente com InMemorySessionService. Configurar com agent: professor_virtual.",
+          "status": "pending",
+          "parentTaskId": 6
+        },
+        {
+          "id": 2,
+          "title": "Verificação de consistência",
+          "description": "Validar nomes de classe e agente",
+          "dependencies": [
+            1
+          ],
+          "details": "Verificar grafia exata de InMemoryRunner e professor_virtual para execução correta",
+          "status": "pending",
+          "parentTaskId": 6
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "projectName": "professor-virtual",
+    "totalTasks": 6,
+    "sourceFile": "tasks.md",
+    "generatedAt": "2025-07-23T00:00:00Z"
+  }
+}
